@@ -1,9 +1,19 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
+import { fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions } from 'src/constants/articleProps';
+import { Text } from 'src/ui/text';
 import { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 
 import styles from './ArticleParamsForm.module.scss';
+
+export type Params = {
+	fontFamilyOption: (typeof fontFamilyOptions) [number],
+	fontColor: (typeof fontColors) [number],
+	backgroundColor: (typeof backgroundColors) [number],
+	contentWidth: (typeof contentWidthArr) [number],
+	fontSizeOption: (typeof fontSizeOptions) [number],
+}
 
 type FormState = 'closed' | 'opened';
 
