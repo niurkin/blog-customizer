@@ -23,7 +23,6 @@ const SelectWithState = () => {
 		<>
 			<Select
 				selected={selected}
-				name='dropdown'
 				onChange={setSelected}
 				options={options}
 				title='Название выпадающего списка'

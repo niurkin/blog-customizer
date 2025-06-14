@@ -2,7 +2,10 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import { OptionType, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, ArticleStateType } from 'src/constants/articleProps';
 import { Text } from 'src/ui/text';
-import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { Select } from 'src/ui/select';
+import { Separator } from 'src/ui/separator';
+import { RadioGroup } from 'src/ui/radio-group';
+import { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 
 import styles from './ArticleParamsForm.module.scss';
@@ -22,17 +25,14 @@ export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) 
 		setIsOpen(isOpen === false ? true : false);
 	};
 
-	const handleInputChange = (value: OptionType) => {
-		return function(evt: ChangeEvent<HTMLInputElement>) {
-			const target = evt.target;
-			const name = target.name;
-
+	const handleInputChange = (value: OptionType, name: string | undefined) => {
+		if(name) {
 			setFormState({
 				...formState,
-					[name]: value
+				[name]: value
 				  });
 		}
-	};
+	}
 
 	const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
 		evt.preventDefault();
@@ -55,6 +55,12 @@ export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) 
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [isOpen]);
+
+	useEffect(() => {
+		setFormState({
+			...formState,
+			...formSetter});
+	  }, [formSetter]);
 	
 
 	return (
@@ -67,6 +73,42 @@ export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) 
 				<Text as='h2' size={31} weight={800} uppercase>
 					Задайте параметры
 				</Text>
+				<Select
+				    name='fontFamilyOption'
+					selected={formState.fontFamilyOption}
+				    onChange={handleInputChange}
+				    options={fontFamilyOptions}
+				    title='Шрифт'
+				/>
+				<RadioGroup
+				    name='fontSizeOption'
+					selected={formState.fontSizeOption}
+				    onChange={handleInputChange}
+				    options={fontSizeOptions}
+				    title='Размер шрифта'
+				/>
+				<Select
+				    name='fontColor'
+					selected={formState.fontColor}
+				    onChange={handleInputChange}
+				    options={fontColors}
+				    title='Цвет шрифта'
+				/>
+				<Separator />
+				<Select
+				    name='backgroundColor'
+					selected={formState.backgroundColor}
+				    onChange={handleInputChange}
+				    options={backgroundColors}
+				    title='Цвет фона'
+				/>
+				<Select
+				    name='contentWidth'
+					selected={formState.contentWidth}
+				    onChange={handleInputChange}
+				    options={contentWidthArr}
+				    title='Ширина контента'
+				/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' htmlType='reset' type='clear' onClick={onReset} />
 						<Button title='Применить' htmlType='submit' type='apply' />
