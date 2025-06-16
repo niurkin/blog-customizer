@@ -1,25 +1,24 @@
 import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
-import { OptionType, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, ArticleStateType } from 'src/constants/articleProps';
+import { OptionType, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, defaultArticleState, ArticleStateType } from 'src/constants/articleProps';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { RadioGroup } from 'src/ui/radio-group';
+import { useOutsideClickClose } from './hooks/useOutsideClickClose';
 import { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
 
 import styles from './ArticleParamsForm.module.scss';
 
 type FormProps = {
-	formSetter: ArticleStateType;
-	onSubmit: (data: ArticleStateType) => void;
-	onReset: () => void;
+	formAction: (data: ArticleStateType) => void;
 };
 
-export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) => {
+export const ArticleParamsForm = ({ formAction }: FormProps) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const [formState, setFormState] = useState<ArticleStateType>(formSetter);
-	const containerRef = useRef<HTMLDivElement | null>(null);
+	const [formState, setFormState] = useState<ArticleStateType>(defaultArticleState);
+	const rootRef = useRef<HTMLDivElement | null>(null);
 
 	const toggleOpenState = () => {
 		setIsOpen(isOpen === false ? true : false);
@@ -36,38 +35,28 @@ export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) 
 
 	const handleSubmit = (evt: React.SyntheticEvent<HTMLFormElement>) => {
 		evt.preventDefault();
-		onSubmit(formState);
+		formAction(formState);
 	};
 
-	useEffect(() => {
-		const handleClickOutside = (evt: MouseEvent) => {
-			if (
-				isOpen === true &&
-				containerRef.current &&
-				!containerRef.current.contains(evt.target as Node)
-			) {
-				setIsOpen(false);
-			}
-		};
-
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [isOpen]);
-
-	useEffect(() => {
+	const handleReset = () => {
 		setFormState({
 			...formState,
-			...formSetter});
-	  }, [formSetter]);
-	
+			...defaultArticleState
+			});
+		formAction(defaultArticleState);
+	};
+
+	useOutsideClickClose({
+			isOpen,
+			rootRef,
+			onChange: setIsOpen,
+		});
 
 	return (
 		<>
 			<ArrowButton isOpen={isOpen} onClick={toggleOpenState} />
 			<aside
-			  ref={containerRef}
+			  ref={rootRef}
 			  className={clsx(styles.container, { [styles.container_open]: isOpen === true })}>
 				<form className={styles.form} onSubmit={handleSubmit}>
 				<Text as='h2' size={31} weight={800} uppercase>
@@ -110,7 +99,7 @@ export const ArticleParamsForm = ({ formSetter, onSubmit, onReset }: FormProps) 
 				    title='Ширина контента'
 				/>
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' onClick={onReset} />
+						<Button title='Сбросить' htmlType='reset' type='clear' onClick={handleReset} />
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
