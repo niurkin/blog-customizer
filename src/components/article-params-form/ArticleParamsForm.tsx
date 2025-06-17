@@ -39,10 +39,7 @@ export const ArticleParamsForm = ({ formAction }: FormProps) => {
 	};
 
 	const handleReset = () => {
-		setFormState({
-			...formState,
-			...defaultArticleState
-			});
+		setFormState(defaultArticleState);
 		formAction(defaultArticleState);
 	};
 
